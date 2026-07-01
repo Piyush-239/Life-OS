@@ -1,6 +1,8 @@
 from fastapi import FastAPI
+from app.api.routes import chat
 
 from app.api.routes import health
+
 
 app = FastAPI(
     title="LIFE-OS",
@@ -9,6 +11,7 @@ app = FastAPI(
 )
 
 app.include_router(health.router)
+app.include_router(chat.router)
 
 
 @app.get("/")
