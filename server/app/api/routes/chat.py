@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.services.llm.factory import get_llm
+from app.services.ai.llm.factory import get_llm
 
 router = APIRouter()
 

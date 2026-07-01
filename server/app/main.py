@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from app.api.routes import chat
-
+from app.core.settings import get_settings
 from app.api.routes import health
+settings = get_settings()
+
 
 
 app = FastAPI(
