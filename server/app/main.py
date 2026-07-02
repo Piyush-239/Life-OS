@@ -14,6 +14,11 @@ app = FastAPI(
 app.include_router(health.router)
 app.include_router(chat.router)
 
+from app.database.base import Base
+from app.database.session import engine
+
+Base.metadata.create_all(bind=engine)
+
 
 @app.get("/")
 def root():
