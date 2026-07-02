@@ -22,4 +22,4 @@ class OllamaProvider(BaseLLMProvider):
             ],
         )
 
-        return response["message"]["content"]
+        return response.message.content
