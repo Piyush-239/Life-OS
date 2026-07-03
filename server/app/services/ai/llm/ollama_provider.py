@@ -12,7 +12,29 @@ class OllamaProvider(BaseLLMProvider):
         self.model = settings.llm_model
 
     def chat(self, message: str) -> str:
-        for chunk in self.client.chat(stream=True):
-            yield chunk
+        response = self.client.chat(
+            model=self.model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": message,
+                }
+            ],
+        )
 
-        return response.message.content
+        return response["message"]["content"]
+
+    def stream_chat(self, message: str):
+        stream = self.client.chat(
+            model=self.model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": message,
+                }
+            ],
+            stream=True,
+        )
+
+        for chunk in stream:
+            yield chunk["message"]["content"]
