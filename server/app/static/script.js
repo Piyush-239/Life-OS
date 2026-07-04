@@ -1,5 +1,13 @@
 const chat = document.getElementById("chat");
 
+// Press Enter to send message
+document.getElementById("message").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
 async function sendMessage() {
 
     const input = document.getElementById("message");

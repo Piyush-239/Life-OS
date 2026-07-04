@@ -10,4 +10,4 @@ class ChatBrain:
         return self.llm.chat(prompt)
 
     def stream_reply(self, prompt: str):
-        return self.llm.chat_stream(prompt)
+        return self.llm.stream_chat(prompt)

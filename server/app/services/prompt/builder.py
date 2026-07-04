@@ -1,8 +1,7 @@
 from pathlib import Path
-from app.database.models import Memory
 
 SYSTEM_PROMPT = Path(
-    "app\services\prompt\system_prompt.txt"
+    "app/services/prompt/system_prompt.txt"
 ).read_text(encoding="utf-8")
 
 
@@ -11,7 +10,7 @@ class PromptBuilder:
     def build(
         self,
         user_message: str,
-        memories: list[Memory],
+        memories: list[str],
     ) -> str:
 
         prompt = SYSTEM_PROMPT
@@ -20,7 +19,7 @@ class PromptBuilder:
 
         if memories:
             for memory in memories:
-                prompt += f"\n- {memory.content}"
+                prompt += f"\n- {memory}"
         else:
             prompt += "\n(None)"
 
