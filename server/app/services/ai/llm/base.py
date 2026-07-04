@@ -2,9 +2,13 @@ from abc import ABC, abstractmethod
 
 
 class BaseLLMProvider(ABC):
-    """Abstract base class for all LLM providers."""
 
     @abstractmethod
     def chat(self, message: str) -> str:
-        """Send a message to the language model."""
+        """Return a complete response."""
+        pass
+
+    @abstractmethod
+    def stream_chat(self, message: str):
+        """Yield response chunks."""
         pass

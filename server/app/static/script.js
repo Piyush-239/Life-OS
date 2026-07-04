@@ -4,7 +4,7 @@ async function sendMessage() {
 
     const input = document.getElementById("message");
 
-    const message = input.value;
+    const message = input.value.trim();
 
     if (!message) return;
 
@@ -12,28 +12,39 @@ async function sendMessage() {
 
     input.value = "";
 
-    const response = await fetch("/chat", {
+    // Create an empty assistant message
+    const assistant = document.createElement("p");
+    assistant.innerHTML = "<b>LIFE-OS:</b> ";
+    chat.appendChild(assistant);
+
+    const response = await fetch("/chat/stream", {
 
         method: "POST",
 
         headers: {
-
             "Content-Type": "application/json"
-
         },
 
         body: JSON.stringify({
-
             message: message
-
         })
 
     });
 
-    const data = await response.json();
+    const reader = response.body.getReader();
 
-    chat.innerHTML += `<p><b>LIFE-OS:</b> ${data.reply}</p>`;
+    const decoder = new TextDecoder();
 
-    chat.scrollTop = chat.scrollHeight;
+    while (true) {
 
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        assistant.innerHTML += chunk;
+
+        chat.scrollTop = chat.scrollHeight;
+    }
 }

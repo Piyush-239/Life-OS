@@ -1,36 +1,37 @@
-import json
-
-from app.services.ai.llm.factory import get_llm
-
-
 class MemoryExtractor:
-    def __init__(self):
-        self.llm = get_llm()
 
     def extract(self, message: str):
-        prompt = f"""
-Extract only long-term memories from this message.
 
-Return ONLY valid JSON.
+        text = message.lower()
 
-Format:
-[
-  {{
-    "category": "goal",
-    "content": "Build LIFE-OS"
-  }}
-]
+        memories = []
 
-If nothing is worth remembering, return:
-[]
+        # Favorite things
+        if "my favorite" in text:
+            memories.append({
+                "category": "preference",
+                "content": message
+            })
 
-Message:
-{message}
-"""
+        # Projects
+        if "i'm building" in text or "i am building" in text:
+            memories.append({
+                "category": "project",
+                "content": message
+            })
 
-        response = self.llm.chat(prompt)
+        # Goals
+        if "i want to" in text:
+            memories.append({
+                "category": "goal",
+                "content": message
+            })
 
-        try:
-            return json.loads(response)
-        except Exception:
-            return []
+        # Learning
+        if "i'm learning" in text or "i am learning" in text:
+            memories.append({
+                "category": "learning",
+                "content": message
+            })
+
+        return memories

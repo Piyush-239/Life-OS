@@ -11,13 +11,13 @@ class OllamaProvider(BaseLLMProvider):
         self.client = Client(host=settings.ollama_host)
         self.model = settings.llm_model
 
-    def chat(self, message: str) -> str:
+    def chat(self, prompt: str):
         response = self.client.chat(
             model=self.model,
             messages=[
                 {
                     "role": "user",
-                    "content": message,
+                    "content": prompt,
                 }
             ],
         )
@@ -37,4 +37,7 @@ class OllamaProvider(BaseLLMProvider):
         )
 
         for chunk in stream:
-            yield chunk["message"]["content"]
+            content = chunk["message"]["content"]
+
+            if content:
+                yield content
