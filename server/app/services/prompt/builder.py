@@ -10,19 +10,40 @@ class PromptBuilder:
     def build(
         self,
         user_message: str,
-        memories: list[str],
+        memories,
     ) -> str:
 
         prompt = SYSTEM_PROMPT
 
-        prompt += "\n\nRelevant memories:\n"
+        prompt += "\n\n========== MEMORY DATABASE ==========\n"
 
         if memories:
-            for memory in memories:
-                prompt += f"\n- {memory}"
-        else:
-            prompt += "\n(None)"
 
-        prompt += f"\n\nCurrent user message:\n\n{user_message}"
+            for memory in memories:
+
+                prompt += (
+                    f"[{memory.category.upper()}] "
+                    f"{memory.key} = {memory.value}\n"
+                )    
+
+        else:
+            prompt += "EMPTY\n"
+
+        prompt += "=====================================\n"
+
+        prompt += f"""
+
+========== CURRENT USER MESSAGE ==========
+
+{user_message}
+
+==========================================
+
+Assistant:
+"""
+
+        print("\n========== FINAL PROMPT ==========")
+        print(prompt)
+        print("==================================\n")
 
         return prompt

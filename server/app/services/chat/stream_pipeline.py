@@ -14,14 +14,33 @@ class StreamingChatPipeline:
 
     def run(self, message: str):
 
-        # Retrieve all memories
+        # Load all memories
         all_memories = self.memory_service.get_all()
+        print("\n===== ALL MEMORIES FROM DB =====")
 
-        # AI selects relevant memories
-        relevant_memories = self.brain.memory.retrieve(
-            message,
-            all_memories,
-        )
+        for memory in all_memories:
+            print(
+                memory.category,
+                memory.key,
+                memory.value,
+            )
+
+        # Retrieve only relevant memories
+        relevant_memories = all_memories
+
+        print("\n===== RETRIEVED MEMORIES =====")
+        for memory in relevant_memories:
+            print(
+                f"[{memory.category}] "
+                f"{memory.key} = {memory.value}"
+            )
+
+        print("\nBuilding prompt with:")
+        print(len(all_memories))
+
+        for m in all_memories:
+            print(m.category, m.key, m.value)
+        
 
         # Build prompt
         prompt = self.prompt_builder.build(
@@ -31,7 +50,7 @@ class StreamingChatPipeline:
 
         full_reply = ""
 
-        # Stream AI response
+        # Stream AI reply
         for chunk in self.brain.chat.stream_reply(prompt):
             full_reply += chunk
             yield chunk
@@ -42,11 +61,26 @@ class StreamingChatPipeline:
             assistant_message=full_reply,
         )
 
-        # Extract memories from this message
-        new_memories = self.brain.memory.extract(message)
-
-        # Save memories
-        self.memory_service.save(
-            memories=new_memories,
-            conversation_id=conversation.id,
+        # Extract candidate memories
+        candidates = self.brain.memory.extract(
+            message,
         )
+
+        print("\n===== Candidate Memories =====")
+        print(candidates)
+
+        # Validate candidates
+        approved = self.brain.memory_validator.validate(
+            candidates,
+            all_memories,
+        )
+
+        print("\n===== Approved Memories =====")
+        print(approved)
+
+        # Save approved memories
+        if approved:
+            self.memory_service.save(
+                approved,
+                conversation.id,
+            )

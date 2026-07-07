@@ -6,35 +6,48 @@ class MemoryService:
 
     def save(self, memories, conversation_id):
 
-        print("=== MEMORIES ===")
-        print(memories)
-        print(type(memories))
-
-        session = SessionLocal()
+        db = SessionLocal()
 
         try:
-            for memory in memories:
-                print(memory)
-                print(type(memory))
 
-                session.add(
-                    Memory(
-                        category=memory["category"],
-                        content=memory["content"],
-                        source_conversation_id=conversation_id,
+            for memory in memories:
+
+                existing = (
+                    db.query(Memory)
+                    .filter(
+                        Memory.category == memory["category"],
+                        Memory.key == memory["key"],
                     )
+                    .first()
                 )
 
-            session.commit()
+                if existing:
+
+                    existing.value = memory["value"]
+                    existing.source_conversation_id = conversation_id
+
+                else:
+
+                    db.add(
+                        Memory(
+                            category=memory["category"],
+                            key=memory["key"],
+                            value=memory["value"],
+                            source_conversation_id=conversation_id,
+                        )
+                    )
+
+            db.commit()
 
         finally:
-            session.close()
+            db.close()
 
     def get_all(self):
-        session = SessionLocal()
+
+        db = SessionLocal()
 
         try:
-            return session.query(Memory).all()
+            return db.query(Memory).all()
 
         finally:
-            session.close()
+            db.close()
