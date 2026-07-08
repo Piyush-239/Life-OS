@@ -1,14 +1,20 @@
 from app.database.models import Memory
 from app.database.session import SessionLocal
+from app.vector.indexer import MemoryIndexer
 
 
 class MemoryService:
+
+    def __init__(self):
+        self.indexer = MemoryIndexer()
 
     def save(self, memories, conversation_id):
 
         db = SessionLocal()
 
         try:
+
+            updated_rows = []
 
             for memory in memories:
 
@@ -26,18 +32,26 @@ class MemoryService:
                     existing.value = memory["value"]
                     existing.source_conversation_id = conversation_id
 
+                    updated_rows.append(existing)
+
                 else:
 
-                    db.add(
-                        Memory(
-                            category=memory["category"],
-                            key=memory["key"],
-                            value=memory["value"],
-                            source_conversation_id=conversation_id,
-                        )
+                    memory_row = Memory(
+                        category=memory["category"],
+                        key=memory["key"],
+                        value=memory["value"],
+                        source_conversation_id=conversation_id,
                     )
 
+                    db.add(memory_row)
+                    updated_rows.append(memory_row)
+
             db.commit()
+
+            # Index every inserted/updated memory
+            for memory in updated_rows:
+                print("INDEXING:", memory.category, memory.key, memory.value)
+                self.indexer.add(memory)
 
         finally:
             db.close()
