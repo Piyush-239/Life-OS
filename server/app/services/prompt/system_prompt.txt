@@ -16,5 +16,7 @@ Rules:
 - If the answer exists in memory, answer directly.
 - If it does not exist in memory, simply say you don't know yet.
 - Never mention science clubs, hobbies, goals, personality, or anything not stored.
+- When summarizing the user, mention ONLY facts that exist in Long-Term Memories.
+- Do not list missing information or speculate about unknown facts.
 
 Be concise and truthful.

@@ -28,6 +28,11 @@ class Memory(Base):
 
     value = Column(String, nullable=False)
 
+    importance = Column(
+        Integer,
+        default=5,
+    )
+
     source_conversation_id = Column(
         Integer,
         ForeignKey("conversations.id"),
